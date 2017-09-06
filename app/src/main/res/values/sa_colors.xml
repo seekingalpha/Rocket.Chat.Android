@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_hint">#FF949494</color>
+    <color name="orange_button">#fffa8a20</color>
+    <color name="orange_button_selected">#FFB05D16</color>
+
+    <color name="background_toolbar">#ff222222</color>
+    <color name="background_input">#FFF7F8F7</color>
+    <color name="background_input_field">#fffafafa</color>
+    <color name="border_input">#ffc8c9cd</color>
+    <color name="body_text">#ff666666</color>
+    <color name="body_divider">#ff999999</color>
+    <color name="background_menu_fade">#50000000</color>
+    <color name="colorNavigationBar">#ff666666</color>
+</resources>

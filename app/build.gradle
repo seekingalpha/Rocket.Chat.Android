@@ -103,6 +103,14 @@ android {
             manifest.srcFile 'src/release/AndroidManifest.xml'
         }
     }
+
+    productFlavors {
+        seekingalpha {
+            versionName "0.1"
+        }
+        rocket {
+        }
+    }
 }
 
 play {
@@ -174,6 +182,10 @@ dependencies {
     provided 'io.reactivex:rxjava:1.3.0'
     provided "com.github.akarnokd:rxjava2-interop:0.10.2"
     provided 'com.hadisatrio:Optional:v1.0.1'
+
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

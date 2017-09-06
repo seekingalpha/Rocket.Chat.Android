@@ -16,14 +16,14 @@ import chat.rocket.android.fragment.oauth.TwitterOAuthFragment;
 public class OAuthProviderInfo {
   private static final ArrayList<OAuthProviderInfo> _LIST = new ArrayList<OAuthProviderInfo>() {
     {
-      add(new OAuthProviderInfo(
-          "twitter", R.id.btn_login_with_twitter, TwitterOAuthFragment.class));
-      add(new OAuthProviderInfo(
-          "github", R.id.btn_login_with_github, GitHubOAuthFragment.class));
-      add(new OAuthProviderInfo(
-          "google", R.id.btn_login_with_google, GoogleOAuthFragment.class));
-      add(new OAuthProviderInfo(
-          "facebook", R.id.btn_login_with_facebook, FacebookOAuthFragment.class));
+//      add(new OAuthProviderInfo(
+//          "twitter", R.id.btn_login_with_twitter, TwitterOAuthFragment.class));
+//      add(new OAuthProviderInfo(
+//          "github", R.id.btn_login_with_github, GitHubOAuthFragment.class));
+//      add(new OAuthProviderInfo(
+//          "google", R.id.btn_login_with_google, GoogleOAuthFragment.class));
+//      add(new OAuthProviderInfo(
+//          "facebook", R.id.btn_login_with_facebook, FacebookOAuthFragment.class));
     }
   };
   public static final List<OAuthProviderInfo> LIST = Collections.unmodifiableList(_LIST);

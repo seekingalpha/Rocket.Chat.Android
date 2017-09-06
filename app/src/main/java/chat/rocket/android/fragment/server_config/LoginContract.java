@@ -14,6 +14,8 @@ public interface LoginContract {
 
     void showError(String message);
 
+    void showErrorActivity();
+
     void showLoginServices(List<LoginServiceConfiguration> loginServiceList);
 
     void showTwoStepAuth();

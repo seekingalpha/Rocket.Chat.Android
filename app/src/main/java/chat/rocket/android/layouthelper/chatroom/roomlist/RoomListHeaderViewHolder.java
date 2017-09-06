@@ -20,7 +20,7 @@ public class RoomListHeaderViewHolder extends RecyclerView.ViewHolder {
 
   public void bind(RoomListHeader roomListHeader) {
     final RoomListHeader.ClickListener clickListener = roomListHeader.getClickListener();
-    if (clickListener == null) {
+    if (clickListener == null || title.getText().toString().equals("CHANNELS")) {
       button.setVisibility(View.GONE);
     } else {
       button.setVisibility(View.VISIBLE);

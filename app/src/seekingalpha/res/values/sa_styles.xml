@@ -1,0 +1,74 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorLink">@drawable/selector_text_color_link</item>
+        <item name="colorControlActivated">@color/colorAccentDark</item>
+        <item name="android:textColorHighlight">@color/colorAccent_a40</item>
+
+        <item name="actionModeBackground">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/colorNavigationBar</item>
+        <item name="android:windowBackground">@drawable/window_gradient_background</item>
+        <item name="android:textColorHint">@color/color_hint</item>
+        <item name="android:titleTextStyle">@style/LightToolbar</item>
+    </style>
+    <style name="TextAppearance.RocketChat.Message.Username" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textColor">#bb000000</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="LightToolbar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@android:color/white</item>
+    </style>
+
+    <style name="Main.AppTheme" parent="AppTheme">
+        <item name="android:statusBarColor" tools:targetApi="21">@color/background_toolbar</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/background_toolbar</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorLink">@drawable/selector_text_color_link</item>
+        <item name="colorControlActivated">@color/colorAccentDark</item>
+        <item name="android:textColorHighlight">@color/colorAccent_a40</item>
+
+        <item name="actionModeBackground">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+    </style>
+
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorLink">@drawable/selector_text_color_link</item>
+        <item name="colorControlActivated">@color/colorAccentDark</item>
+        <item name="android:textColorHighlight">@color/colorAccent_a40</item>
+    </style>
+
+    <style name="AppTheme.ProgressBar.Horizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:minHeight">11dp</item>
+        <item name="android:progressDrawable">@drawable/progress_bar</item>
+    </style>
+
+    <style name="LoginEditText">
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:background">@drawable/frame_edit_text</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:minHeight">45dp</item>
+        <item name="android:paddingLeft">15dp</item>
+        <item name="android:paddingRight">15dp</item>
+    </style>
+</resources>

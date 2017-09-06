@@ -42,6 +42,8 @@
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize"/>
 
+        <activity android:name=".activity.UserErrorActivity"></activity>
+
         <service android:name=".service.RocketChatService"/>
 
         <receiver

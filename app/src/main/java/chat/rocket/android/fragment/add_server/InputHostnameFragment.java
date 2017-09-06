@@ -21,7 +21,6 @@ import chat.rocket.android.service.ConnectivityManager;
 public class InputHostnameFragment extends AbstractFragment implements InputHostnameContract.View {
 
   private InputHostnameContract.Presenter presenter;
-  private ConstraintLayout container;
   private View waitingView;
 
   public InputHostnameFragment() {}
@@ -43,9 +42,7 @@ public class InputHostnameFragment extends AbstractFragment implements InputHost
   protected void onSetupView() {
     setupVersionInfo();
 
-    container = rootView.findViewById(R.id.container);
     waitingView = rootView.findViewById(R.id.waiting);
-    rootView.findViewById(R.id.btn_connect).setOnClickListener(view -> handleConnect());
   }
 
   private void setupVersionInfo() {
@@ -61,6 +58,7 @@ public class InputHostnameFragment extends AbstractFragment implements InputHost
   public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     presenter.bindView(this);
+    handleConnect();
   }
 
   @Override
@@ -70,9 +68,7 @@ public class InputHostnameFragment extends AbstractFragment implements InputHost
   }
 
   private String getHostname() {
-    final TextView editor = (TextView) rootView.findViewById(R.id.editor_hostname);
-
-    return TextUtils.or(TextUtils.or(editor.getText(), editor.getHint()), "").toString();
+    return getString(R.string.sa_host);
   }
 
   private void showError(String errString) {
@@ -81,14 +77,12 @@ public class InputHostnameFragment extends AbstractFragment implements InputHost
 
   @Override
   public void showLoader() {
-    container.setVisibility(View.GONE);
     waitingView.setVisibility(View.VISIBLE);
   }
 
   @Override
   public void hideLoader() {
     waitingView.setVisibility(View.GONE);
-    container.setVisibility(View.VISIBLE);
   }
 
   @Override

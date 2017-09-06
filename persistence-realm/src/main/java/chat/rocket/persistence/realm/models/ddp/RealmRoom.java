@@ -41,6 +41,7 @@ public class RealmRoom extends RealmObject {
   private long _updatedAt;
   private long ls; //last seen.
   private boolean f;
+  private String fname;
 
   public static JSONObject customizeJson(JSONObject roomSubscriptionJson) throws JSONException {
     if (!roomSubscriptionJson.isNull(LAST_SEEN)) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="width_menu">330dp</dimen>
+    <dimen name="padding_login">35dp</dimen>
+    <dimen name="margin_logo">10dp</dimen>
+
+    <dimen name="avatar_size">60dp</dimen>
+    <dimen name="padding_button_attachment">3dp</dimen>
+    <dimen name="padding_button_plus_attachment">9dp</dimen>
+    <dimen name="size_menu_title">30dp</dimen>
+</resources>

@@ -11,11 +11,16 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
+
+import chat.rocket.android.LaunchUtil;
 import chat.rocket.android.R;
+import chat.rocket.android.SALaunchUtils;
+import chat.rocket.android.api.HttpHelper;
 import chat.rocket.android.api.MethodCallHelper;
 import chat.rocket.android.layouthelper.oauth.OAuthProviderInfo;
 import chat.rocket.android.log.RCLog;
 import chat.rocket.core.models.LoginServiceConfiguration;
+import chat.rocket.persistence.realm.RealmStore;
 import chat.rocket.persistence.realm.repositories.RealmLoginServiceConfigurationRepository;
 import chat.rocket.persistence.realm.repositories.RealmPublicSettingRepository;
 
@@ -39,10 +44,11 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    presenter = new LoginPresenter(
+    presenter = new SALoginPresenter(
         new RealmLoginServiceConfigurationRepository(hostname),
         new RealmPublicSettingRepository(hostname),
-        new MethodCallHelper(getContext(), hostname)
+        new MethodCallHelper(getContext(), hostname),
+        new HttpHelper(getActivity())
     );
   }
 
@@ -51,17 +57,12 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
     container = rootView.findViewById(R.id.container);
 
     Button btnEmail = rootView.findViewById(R.id.btn_login_with_email);
-    Button btnUserRegistration = rootView.findViewById(R.id.btn_user_registration);
     txtUsername = rootView.findViewById(R.id.editor_username);
     txtPasswd = rootView.findViewById(R.id.editor_passwd);
     waitingView = rootView.findViewById(R.id.waiting);
 
     btnEmail.setOnClickListener(view ->
         presenter.login(txtUsername.getText().toString(), txtPasswd.getText().toString()));
-
-    btnUserRegistration.setOnClickListener(view ->
-        UserRegistrationDialogFragment.create(hostname, txtUsername.getText().toString(), txtPasswd.getText().toString())
-        .show(getFragmentManager(), "UserRegistrationDialogFragment"));
   }
 
   @Override
@@ -79,6 +80,11 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   @Override
   public void showError(String message) {
     Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT).show();
+  }
+
+  @Override
+  public void showErrorActivity() {
+    SALaunchUtils.showUserErrorActivity(getActivity());
   }
 
   @Override
