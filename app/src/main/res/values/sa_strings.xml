@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="user_error_text">The Seeking Alpha Marketplace app is only available for subscribers. The account you entered has no active subscriptions.\n\nIf you feel this is an error, please email</string>
+    <string name="user_error_text">The Seeking Alpha Chat app is only available for subscribers to our paid products. The account you entered has no active subscriptions.\n\n If you feel this is an error, please email </string>
     <string name="email_subscription">subscriptions@seekingalpha.com</string>
 </resources>
