@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SA Chat</string>
-    <string name="fragment_home_welcome_message">Welcome to Marketplace\nSelect a channel from the drawer.</string>
 </resources>
