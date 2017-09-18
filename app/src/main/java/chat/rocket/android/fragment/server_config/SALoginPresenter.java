@@ -1,9 +1,10 @@
 package chat.rocket.android.fragment.server_config;
 
-import chat.rocket.android.api.HttpHelper;
+import com.seekingalpha.sanetwork.HttpHelper;
+import com.seekingalpha.sanetwork.response.TokenResponse;
+
 import chat.rocket.android.api.MethodCallHelper;
 import chat.rocket.android.api.TwoStepAuthException;
-import chat.rocket.android.api.rest.TokenResponse;
 import chat.rocket.android.helper.TextUtils;
 import chat.rocket.core.repositories.LoginServiceConfigurationRepository;
 import chat.rocket.core.repositories.PublicSettingRepository;

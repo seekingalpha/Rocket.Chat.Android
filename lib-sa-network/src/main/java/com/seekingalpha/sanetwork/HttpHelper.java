@@ -1,25 +1,15 @@
-package chat.rocket.android.api;
-
-import android.content.Context;
+package com.seekingalpha.sanetwork;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.seekingalpha.sanetwork.response.TokenResponse;
+import com.seekingalpha.sanetwork.utils.UnzippingInterceptor;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import chat.rocket.android.R;
-import chat.rocket.android.api.rest.Http;
-import chat.rocket.android.api.rest.TokenResponse;
-import okhttp3.Headers;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.internal.http.RealResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okio.GzipSource;
-import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -29,8 +19,7 @@ public class HttpHelper {
     private Http http;
     private Retrofit retrofit;
 
-    public HttpHelper(Context context) {
-        String host = context.getString(R.string.sa_http_host);
+    public HttpHelper(String host) {
 
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -62,30 +51,5 @@ public class HttpHelper {
         body.put("email", email);
         body.put("password", password);
         return http.login(header, body);
-    }
-
-    private class UnzippingInterceptor implements Interceptor {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Response response = chain.proceed(chain.request());
-            return unzip(response);
-        }
-
-        private Response unzip(final Response response) throws IOException {
-
-            if (response.body() == null) {
-                return response;
-            }
-
-            GzipSource responseBody = new GzipSource(response.body().source());
-            Headers strippedHeaders = response.headers().newBuilder()
-                    .removeAll("Content-Encoding")
-                    .removeAll("Content-Length")
-                    .build();
-            return response.newBuilder()
-                    .headers(strippedHeaders)
-                    .body(new RealResponseBody(strippedHeaders, Okio.buffer(responseBody)))
-                    .build();
-        }
     }
 }

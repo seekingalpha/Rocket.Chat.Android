@@ -1,4 +1,4 @@
-package chat.rocket.android.api.rest;
+package com.seekingalpha.sanetwork.response;
 
 import com.google.gson.annotations.SerializedName;
 

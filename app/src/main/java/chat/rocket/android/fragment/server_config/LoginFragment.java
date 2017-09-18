@@ -9,13 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.seekingalpha.sanetwork.HttpHelper;
+
 import java.util.HashMap;
 import java.util.List;
 
 import chat.rocket.android.LaunchUtil;
 import chat.rocket.android.R;
 import chat.rocket.android.SALaunchUtils;
-import chat.rocket.android.api.HttpHelper;
 import chat.rocket.android.api.MethodCallHelper;
 import chat.rocket.android.layouthelper.oauth.OAuthProviderInfo;
 import chat.rocket.android.log.RCLog;
@@ -43,12 +44,12 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
+    String host = getActivity().getString(R.string.sa_http_host);
     presenter = new SALoginPresenter(
         new RealmLoginServiceConfigurationRepository(hostname),
         new RealmPublicSettingRepository(hostname),
         new MethodCallHelper(getContext(), hostname),
-        new HttpHelper(getActivity())
+        new HttpHelper(host)
     );
   }
 
