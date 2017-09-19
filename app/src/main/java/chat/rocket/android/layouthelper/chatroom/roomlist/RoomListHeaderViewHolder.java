@@ -20,13 +20,14 @@ public class RoomListHeaderViewHolder extends RecyclerView.ViewHolder {
 
   public void bind(RoomListHeader roomListHeader) {
     final RoomListHeader.ClickListener clickListener = roomListHeader.getClickListener();
+
+    title.setText(roomListHeader.getTitle());
+    button.setOnClickListener(view -> clickListener.onClick());
+
     if (clickListener == null || title.getText().toString().equals("CHANNELS")) {
       button.setVisibility(View.GONE);
     } else {
       button.setVisibility(View.VISIBLE);
-      button.setOnClickListener(view -> clickListener.onClick());
     }
-
-    title.setText(roomListHeader.getTitle());
   }
 }

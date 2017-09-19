@@ -3,6 +3,6 @@
 
     <gradient
         android:startColor="@color/colorNavigationBar"
-        android:endColor="@color/colorPrimaryDark"
+        android:endColor="#ff666666"
         android:angle="90"/>
 </shape>
