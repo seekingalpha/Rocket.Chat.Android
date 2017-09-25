@@ -79,6 +79,8 @@ import chat.rocket.persistence.realm.repositories.RealmUserRepository;
 
 import com.hadisatrio.optional.Optional;
 import com.jakewharton.rxbinding2.support.v4.widget.RxDrawerLayout;
+import com.seekingalpha.sanetwork.TrackingHelper;
+
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -168,14 +170,15 @@ public class RoomFragment extends AbstractChatRoomFragment implements
 
     methodCallHelper = new MethodCallHelper(getContext(), hostname);
 
-    presenter = new RoomPresenter(
+    presenter = new SARoomPresenter(
         roomId,
         userRepository,
         messageInteractor,
         roomRepository,
         absoluteUrlHelper,
         methodCallHelper,
-        ConnectivityManager.getInstance(getContext())
+        ConnectivityManager.getInstance(getContext()),
+        new TrackingHelper(getActivity(), getString(R.string.sa_http_host))
     );
 
     if (savedInstanceState == null) {

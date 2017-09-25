@@ -314,7 +314,7 @@ public class RoomPresenter extends BasePresenter<RoomContract.View>
     addSubscription(subscription);
   }
 
-  private Single<Pair<Room, User>> getRoomUserPair() {
+  protected Single<Pair<Room, User>> getRoomUserPair() {
     return Single.zip(
         getSingleRoom(),
         getCurrentUser(),

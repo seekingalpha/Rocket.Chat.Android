@@ -3,6 +3,8 @@ package chat.rocket.android.fragment.sidebar;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
+import com.seekingalpha.sanetwork.TrackingHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class SidebarMainPresenter extends BasePresenter<SidebarMainContract.View
     private final MethodCallHelper methodCallHelper;
     private SpotlightRepository realmSpotlightRepository;
     private List<RoomSidebar> roomSidebarList;
+    private TrackingHelper trackingHelper;
 
     public SidebarMainPresenter(String hostname,
                                 RoomInteractor roomInteractor,
@@ -42,7 +45,8 @@ public class SidebarMainPresenter extends BasePresenter<SidebarMainContract.View
                                 RocketChatCache rocketChatCache,
                                 AbsoluteUrlHelper absoluteUrlHelper,
                                 MethodCallHelper methodCallHelper,
-                                RealmSpotlightRepository realmSpotlightRepository) {
+                                RealmSpotlightRepository realmSpotlightRepository,
+                                TrackingHelper trackingHelper) {
         this.hostname = hostname;
         this.roomInteractor = roomInteractor;
         this.userRepository = userRepository;
@@ -50,6 +54,7 @@ public class SidebarMainPresenter extends BasePresenter<SidebarMainContract.View
         this.absoluteUrlHelper = absoluteUrlHelper;
         this.methodCallHelper = methodCallHelper;
         this.realmSpotlightRepository = realmSpotlightRepository;
+        this.trackingHelper = trackingHelper;
     }
 
     @Override
@@ -133,6 +138,7 @@ public class SidebarMainPresenter extends BasePresenter<SidebarMainContract.View
     @Override
     public void onLogout() {
         methodCallHelper.logout().continueWith(new LogIfError());
+        trackingHelper.logsOutMenuEvent();
     }
 
     private void subscribeToRooms() {

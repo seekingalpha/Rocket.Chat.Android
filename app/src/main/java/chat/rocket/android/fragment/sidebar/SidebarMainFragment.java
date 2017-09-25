@@ -40,6 +40,8 @@ import chat.rocket.persistence.realm.repositories.RealmSpotlightRepository;
 import chat.rocket.persistence.realm.repositories.RealmUserRepository;
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
+import com.seekingalpha.sanetwork.TrackingHelper;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import java.util.ArrayList;
@@ -90,7 +92,8 @@ public class SidebarMainFragment extends AbstractFragment implements SidebarMain
         new RocketChatCache(getContext()),
         absoluteUrlHelper,
         new MethodCallHelper(getContext(), hostname),
-        new RealmSpotlightRepository(hostname)
+        new RealmSpotlightRepository(hostname),
+        new TrackingHelper(getActivity(), getActivity().getString(R.string.sa_http_host))
     );
   }
 

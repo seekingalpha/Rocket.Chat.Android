@@ -6,6 +6,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.view.View;
 
+import com.seekingalpha.sanetwork.TrackingHelper;
+
 import chat.rocket.android.LaunchUtil;
 import chat.rocket.android.R;
 import chat.rocket.android.RocketChatCache;
@@ -28,6 +30,9 @@ import hugo.weaving.DebugLog;
  * Entry-point for Rocket.Chat.Android application.
  */
 public class MainActivity extends AbstractAuthedActivity implements MainContract.View {
+
+  private TrackingHelper trackingHelper;
+
   private RoomToolbar toolbar;
   private StatusTicker statusTicker;
   private MainContract.Presenter presenter;
@@ -40,6 +45,10 @@ public class MainActivity extends AbstractAuthedActivity implements MainContract
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    String host = getString(R.string.sa_http_host);
+    trackingHelper = new TrackingHelper(this, host);
+
     setContentView(R.layout.activity_main);
     toolbar = (RoomToolbar) findViewById(R.id.activity_main_toolbar);
     statusTicker = new StatusTicker();
@@ -95,6 +104,7 @@ public class MainActivity extends AbstractAuthedActivity implements MainContract
 
       @Override
       public void onPanelOpened(View panel) {
+        trackingHelper.openMenuEvent();
         toolbar.setNavigationIconVerticalMirror(true);
       }
 

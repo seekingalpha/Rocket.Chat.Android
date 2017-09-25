@@ -9,19 +9,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.seekingalpha.sanetwork.HttpHelper;
+import com.seekingalpha.sanetwork.LoginHelper;
+import com.seekingalpha.sanetwork.TrackingHelper;
 
 import java.util.HashMap;
 import java.util.List;
 
-import chat.rocket.android.LaunchUtil;
 import chat.rocket.android.R;
 import chat.rocket.android.SALaunchUtils;
 import chat.rocket.android.api.MethodCallHelper;
 import chat.rocket.android.layouthelper.oauth.OAuthProviderInfo;
 import chat.rocket.android.log.RCLog;
 import chat.rocket.core.models.LoginServiceConfiguration;
-import chat.rocket.persistence.realm.RealmStore;
 import chat.rocket.persistence.realm.repositories.RealmLoginServiceConfigurationRepository;
 import chat.rocket.persistence.realm.repositories.RealmPublicSettingRepository;
 
@@ -29,6 +28,8 @@ import chat.rocket.persistence.realm.repositories.RealmPublicSettingRepository;
  * Login screen.
  */
 public class LoginFragment extends AbstractServerConfigFragment implements LoginContract.View {
+
+  private TrackingHelper trackingHelper;
 
   private LoginContract.Presenter presenter;
   private ConstraintLayout container;
@@ -45,11 +46,13 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     String host = getActivity().getString(R.string.sa_http_host);
+    trackingHelper = new TrackingHelper(getActivity(), host);
     presenter = new SALoginPresenter(
         new RealmLoginServiceConfigurationRepository(hostname),
         new RealmPublicSettingRepository(hostname),
         new MethodCallHelper(getContext(), hostname),
-        new HttpHelper(host)
+        new LoginHelper(host),
+        trackingHelper
     );
   }
 
@@ -139,6 +142,8 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   public void onResume() {
     super.onResume();
     presenter.bindView(this);
+
+    trackingHelper.loginScreen();
   }
 
   @Override

@@ -1,6 +1,7 @@
 package chat.rocket.android.fragment.server_config;
 
-import com.seekingalpha.sanetwork.HttpHelper;
+import com.seekingalpha.sanetwork.LoginHelper;
+import com.seekingalpha.sanetwork.TrackingHelper;
 import com.seekingalpha.sanetwork.response.TokenResponse;
 
 import chat.rocket.android.api.MethodCallHelper;
@@ -14,21 +15,28 @@ import retrofit2.Response;
 
 public class SALoginPresenter extends LoginPresenter {
 
-    private HttpHelper httpHelper;
+    public static String user_id = null;
+
+    private LoginHelper httpHelper;
     private final MethodCallHelper methodCallHelper;
+    private TrackingHelper trackingHelper;
+    private String email;
 
     public SALoginPresenter(
             LoginServiceConfigurationRepository loginServiceConfigurationRepository,
             PublicSettingRepository publicSettingRepository,
             MethodCallHelper methodCallHelper,
-            HttpHelper httpHelper) {
+            LoginHelper httpHelper,
+            TrackingHelper trackingHelper) {
         super(loginServiceConfigurationRepository, publicSettingRepository, methodCallHelper);
         this.httpHelper = httpHelper;
         this.methodCallHelper = methodCallHelper;
+        this.trackingHelper = trackingHelper;
     }
 
     @Override
     public void login(String username, String password) {
+        this.email = username;
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             return;
         }
@@ -39,6 +47,7 @@ public class SALoginPresenter extends LoginPresenter {
     }
 
     private void proceedError(TokenResponse.ErrorLogin errorLogin){
+        trackingHelper.wrongCredentialsEvent(email);
         if(errorLogin.getErrorCode() == 3){
             view.showErrorActivity();
         }else{
@@ -55,6 +64,8 @@ public class SALoginPresenter extends LoginPresenter {
                 proceedError(tokenResponse.getError());
                 return;
             }
+            trackingHelper.setUserId(tokenResponse.getUserId());
+            trackingHelper.correctCredentialsEvent();
 
             methodCallHelper.loginWithToken(tokenResponse.getRcToken())
                     .continueWith(task -> {
