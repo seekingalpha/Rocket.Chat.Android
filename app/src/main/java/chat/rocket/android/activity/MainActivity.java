@@ -16,6 +16,7 @@ import chat.rocket.android.fragment.chatroom.HomeFragment;
 import chat.rocket.android.fragment.chatroom.RoomFragment;
 import chat.rocket.android.fragment.sidebar.SidebarMainFragment;
 import chat.rocket.android.helper.KeyboardHelper;
+import chat.rocket.android.helper.PreferenceHelper;
 import chat.rocket.android.service.ConnectivityManager;
 import chat.rocket.android.widget.RoomToolbar;
 import chat.rocket.core.interactors.CanCreateRoomInteractor;
@@ -47,7 +48,8 @@ public class MainActivity extends AbstractAuthedActivity implements MainContract
     super.onCreate(savedInstanceState);
 
     String host = getString(R.string.sa_http_host);
-    trackingHelper = new TrackingHelper(this, host);
+    PreferenceHelper preferenceHelper = new PreferenceHelper(this);
+    trackingHelper = new TrackingHelper(this, host, preferenceHelper);
 
     setContentView(R.layout.activity_main);
     toolbar = (RoomToolbar) findViewById(R.id.activity_main_toolbar);

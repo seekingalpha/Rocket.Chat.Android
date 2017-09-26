@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import chat.rocket.android.helper.PreferenceHelper;
 import chat.rocket.core.models.User;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -178,7 +179,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
         absoluteUrlHelper,
         methodCallHelper,
         ConnectivityManager.getInstance(getContext()),
-        new TrackingHelper(getActivity(), getString(R.string.sa_http_host))
+        new TrackingHelper(getActivity(), getString(R.string.sa_http_host), new PreferenceHelper(getActivity()))
     );
 
     if (savedInstanceState == null) {

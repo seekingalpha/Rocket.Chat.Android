@@ -6,9 +6,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.seekingalpha.sanetwork.response.MoneResponse;
 import com.seekingalpha.sanetwork.utils.HttpUtils;
+import com.seekingalpha.sanetwork.utils.PagePreferenceHelper;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -48,17 +48,21 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     private String userAgent;
     private Context context;
     private String userId;
+    private String currentPageKey = "";
+    private String currentPageUrl = "";
+    private String referrer = "";
+    private String referrerKey = "";
+    private PagePreferenceHelper preferenceHelper;
 
-    public TrackingHelper(Context context, String host) {
+    public TrackingHelper(Context context, String host, PagePreferenceHelper preferenceHelper) {
         super(host, TrackingApi.class);
         this.context = context;
         userAgent = HttpUtils.createUserAgent(context);
+        this.preferenceHelper = preferenceHelper;
     }
 
     @Override
     protected TrackingApi createApi(String host, Class<TrackingApi> clazz) {
-        Gson gson = new GsonBuilder()
-                .create();
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -74,8 +78,13 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         return retrofit.create(clazz);
     }
 
-    public Call<MoneResponse> mone(String mone) {
-        return getApi().mone(userAgent, mone);
+    public Call<MoneResponse> mone(String url, String pageKey) {
+        referrer = currentPageUrl;
+        referrerKey = currentPageKey;
+        currentPageUrl = url;
+        currentPageKey = pageKey;
+        String strMone = createMone(userId, url, pageKey, referrer, referrerKey);
+        return getApi().mone(userAgent, strMone);
     }
 
     public Call<MoneResponse> moneEvent(String source, String action, String type) {
@@ -83,8 +92,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     }
 
     public Call<MoneResponse> moneEvent(String source, String action, String type, String data) {
-        String key = java.util.UUID.randomUUID().toString();
-        return getApi().moneEvent(userAgent, VERSION, key, source, action, type, data);
+        return getApi().moneEvent(userAgent, VERSION, currentPageKey, source, action, type, data);
     }
 
     public void wrongCredentialsEvent(String email) {
@@ -124,29 +132,43 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     }
 
     public void loginScreen() {
-        String strMone = createMone("/roadblock/step_1/");
-        mone(strMone).enqueue(callback);
+        mone("/roadblock/step_1/", preferenceHelper.getLoginKey()).enqueue(callback);
     }
 
     public void groupChatScreen(String chatName) {
-        String strMone = createMone("/chat/group/" + chatName);
-        mone(strMone).enqueue(callback);
+        mone("/chat/group/" + chatName, preferenceHelper.getGroupChatKey()).enqueue(callback);
     }
 
     public void directMessageScreen(String name) {
-        String strMone = createMone("/chat/direct_msg/" + name);
-        mone(strMone).enqueue(callback);
+        mone("/chat/direct_msg/" + name, preferenceHelper.getDirectMessageKey()).enqueue(callback);
     }
 
-    private String createMone(String url) {
-        String pageKey = java.util.UUID.randomUUID().toString();
+    private String createMone(String userId, String url, String pageKey, String referrer, String referrerKey) {
+        String deviceId = getDeviceID(context);
         LinkedList<String> list = new LinkedList<>();
+
         list.add(VERSION);
-        list.add(userId + "");
-        list.add(userAgent + "");
-        list.add(getDeviceID(context) + "");
-        list.add(url + "");
-        list.add(pageKey + "");
+        list.add("");
+        list.add(pageKey);
+        list.add(referrerKey);
+        list.add(referrer);
+        list.add(url);
+        list.add("");
+        list.add(deviceId);
+        list.add("");
+        list.add(userId);
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
+        list.add("");
         list.add("");
         list.add("");
         list.add("");
@@ -183,7 +205,8 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
 
     class NullOnEmptyConverterFactory extends Converter.Factory {
 
-        @Override public Converter<ResponseBody, MoneResponse> responseBodyConverter(Type type, Annotation[] annotations, final Retrofit retrofit) {
+        @Override
+        public Converter<ResponseBody, MoneResponse> responseBodyConverter(Type type, Annotation[] annotations, final Retrofit retrofit) {
             return new Converter<ResponseBody, MoneResponse>() {
                 @Override
                 public MoneResponse convert(ResponseBody responseBody) throws IOException {
