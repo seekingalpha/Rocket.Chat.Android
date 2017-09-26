@@ -107,9 +107,11 @@ android {
     productFlavors {
         seekingalpha {
             versionName "0.1"
+            applicationId = "com.seekingalpha.chat"
         }
 
         rocket {
+            applicationId = "chat.rocket.android"
         }
     }
 }
