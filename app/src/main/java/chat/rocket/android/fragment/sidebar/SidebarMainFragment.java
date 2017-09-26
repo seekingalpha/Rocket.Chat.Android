@@ -21,6 +21,7 @@ import chat.rocket.android.fragment.sidebar.dialog.AddChannelDialogFragment;
 import chat.rocket.android.fragment.sidebar.dialog.AddDirectMessageDialogFragment;
 import chat.rocket.android.helper.AbsoluteUrlHelper;
 import chat.rocket.android.helper.Logger;
+import chat.rocket.android.helper.PreferenceHelper;
 import chat.rocket.android.layouthelper.chatroom.roomlist.ChannelRoomListHeader;
 import chat.rocket.android.layouthelper.chatroom.roomlist.DirectMessageRoomListHeader;
 import chat.rocket.android.layouthelper.chatroom.roomlist.FavoriteRoomListHeader;
@@ -93,7 +94,7 @@ public class SidebarMainFragment extends AbstractFragment implements SidebarMain
         absoluteUrlHelper,
         new MethodCallHelper(getContext(), hostname),
         new RealmSpotlightRepository(hostname),
-        new TrackingHelper(getActivity(), getActivity().getString(R.string.sa_http_host))
+        new TrackingHelper(getActivity(), getActivity().getString(R.string.sa_http_host), new PreferenceHelper(getActivity()))
     );
   }
 

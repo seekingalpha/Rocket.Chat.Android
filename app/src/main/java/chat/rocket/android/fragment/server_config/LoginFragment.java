@@ -18,6 +18,7 @@ import java.util.List;
 import chat.rocket.android.R;
 import chat.rocket.android.SALaunchUtils;
 import chat.rocket.android.api.MethodCallHelper;
+import chat.rocket.android.helper.PreferenceHelper;
 import chat.rocket.android.layouthelper.oauth.OAuthProviderInfo;
 import chat.rocket.android.log.RCLog;
 import chat.rocket.core.models.LoginServiceConfiguration;
@@ -46,7 +47,8 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     String host = getActivity().getString(R.string.sa_http_host);
-    trackingHelper = new TrackingHelper(getActivity(), host);
+    PreferenceHelper preferenceHelper = new PreferenceHelper(getActivity());
+    trackingHelper = new TrackingHelper(getActivity(), host, preferenceHelper);
     presenter = new SALoginPresenter(
         new RealmLoginServiceConfigurationRepository(hostname),
         new RealmPublicSettingRepository(hostname),
