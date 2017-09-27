@@ -7,4 +7,10 @@ public interface PagePreferenceHelper {
     String getGroupChatKey();
 
     String getDirectMessageKey();
+
+    void storeEmail(String userId);
+
+    String getEmail();
+
+    String getMainKey();
 }

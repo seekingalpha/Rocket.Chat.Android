@@ -64,8 +64,6 @@ public class SALoginPresenter extends LoginPresenter {
                 proceedError(tokenResponse.getError());
                 return;
             }
-            trackingHelper.setUserId(tokenResponse.getUserId());
-            trackingHelper.correctCredentialsEvent();
 
             methodCallHelper.loginWithToken(tokenResponse.getRcToken())
                     .continueWith(task -> {
@@ -79,6 +77,9 @@ public class SALoginPresenter extends LoginPresenter {
                             } else {
                                 view.showError(error.getMessage());
                             }
+                        } else {
+                            trackingHelper.setEmail(email);
+                            trackingHelper.correctCredentialsEvent();
                         }
                         return null;
                     });

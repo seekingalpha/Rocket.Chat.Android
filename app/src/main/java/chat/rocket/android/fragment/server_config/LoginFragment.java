@@ -30,8 +30,6 @@ import chat.rocket.persistence.realm.repositories.RealmPublicSettingRepository;
  */
 public class LoginFragment extends AbstractServerConfigFragment implements LoginContract.View {
 
-  private TrackingHelper trackingHelper;
-
   private LoginContract.Presenter presenter;
   private ConstraintLayout container;
   private View waitingView;
@@ -46,15 +44,12 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    String host = getActivity().getString(R.string.sa_http_host);
-    PreferenceHelper preferenceHelper = new PreferenceHelper(getActivity());
-    trackingHelper = new TrackingHelper(getActivity(), host, preferenceHelper);
     presenter = new SALoginPresenter(
         new RealmLoginServiceConfigurationRepository(hostname),
         new RealmPublicSettingRepository(hostname),
         new MethodCallHelper(getContext(), hostname),
-        new LoginHelper(host),
-        trackingHelper
+        new LoginHelper(getActivity().getString(R.string.sa_http_host)),
+        TrackingHelper.getInstance()
     );
   }
 
@@ -145,7 +140,7 @@ public class LoginFragment extends AbstractServerConfigFragment implements Login
     super.onResume();
     presenter.bindView(this);
 
-    trackingHelper.loginScreen();
+    TrackingHelper.getInstance().loginScreen();
   }
 
   @Override

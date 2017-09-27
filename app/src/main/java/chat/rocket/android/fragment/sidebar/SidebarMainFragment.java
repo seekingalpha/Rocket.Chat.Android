@@ -94,7 +94,7 @@ public class SidebarMainFragment extends AbstractFragment implements SidebarMain
         absoluteUrlHelper,
         new MethodCallHelper(getContext(), hostname),
         new RealmSpotlightRepository(hostname),
-        new TrackingHelper(getActivity(), getActivity().getString(R.string.sa_http_host), new PreferenceHelper(getActivity()))
+        TrackingHelper.getInstance()
     );
   }
 

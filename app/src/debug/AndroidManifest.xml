@@ -4,6 +4,6 @@
 
     <application
         tools:replace="android:name"
-        android:name=".RocketChatApplicationDebug"/>
+        android:name="chat.rocket.activity.SAChatApplicationDebug"/>
 
 </manifest>

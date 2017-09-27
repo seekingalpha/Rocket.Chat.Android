@@ -26,6 +26,16 @@ import retrofit2.Retrofit;
 
 public class TrackingHelper extends BaseApiHelper<TrackingApi> {
 
+    private static TrackingHelper trackingHelper;
+
+    public static TrackingHelper getInstance() {
+        return trackingHelper;
+    }
+
+    public static void init(Context context, String host, PagePreferenceHelper preferenceHelper) {
+        trackingHelper = new TrackingHelper(context, host, preferenceHelper);
+    }
+
     private static final String TAG = "TrackingHelper";
     private static final String VERSION = "2";
 
@@ -47,15 +57,16 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
 
     private String userAgent;
     private Context context;
-    private String userId;
+    private String email;
     private String currentPageKey = "";
     private String currentPageUrl = "";
     private String referrer = "";
     private String referrerKey = "";
     private PagePreferenceHelper preferenceHelper;
 
-    public TrackingHelper(Context context, String host, PagePreferenceHelper preferenceHelper) {
+    private TrackingHelper(Context context, String host, PagePreferenceHelper preferenceHelper) {
         super(host, TrackingApi.class);
+        email = preferenceHelper.getEmail();
         this.context = context;
         userAgent = HttpUtils.createUserAgent(context);
         this.preferenceHelper = preferenceHelper;
@@ -83,7 +94,8 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         referrerKey = currentPageKey;
         currentPageUrl = url;
         currentPageKey = pageKey;
-        String strMone = createMone(userId, url, pageKey, referrer, referrerKey);
+        String strMone = createMone(email, url, pageKey, referrer, referrerKey);
+        Log.i("TrackingHelper", "Mone: " + strMone);
         return getApi().mone(userAgent, strMone);
     }
 
@@ -92,6 +104,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     }
 
     public Call<MoneResponse> moneEvent(String source, String action, String type, String data) {
+        Log.i("TrackingHelper", "MoneEvent: \n" + " PageKey: " + currentPageKey);
         return getApi().moneEvent(userAgent, VERSION, currentPageKey, source, action, type, data);
     }
 
@@ -105,6 +118,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     public void correctCredentialsEvent() {
         moneEvent(SOURCE_ROADBLOCK, ACTION_SUCCESS, TYPE_CREDENTIALS)
                 .enqueue(callback);
+        mainScreen();
     }
 
     public void openMenuEvent() {
@@ -131,6 +145,10 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
                 .enqueue(callback);
     }
 
+    public void mainScreen() {
+        mone("/chat/", preferenceHelper.getMainKey()).enqueue(callback);
+    }
+
     public void loginScreen() {
         mone("/roadblock/step_1/", preferenceHelper.getLoginKey()).enqueue(callback);
     }
@@ -143,7 +161,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         mone("/chat/direct_msg/" + name, preferenceHelper.getDirectMessageKey()).enqueue(callback);
     }
 
-    private String createMone(String userId, String url, String pageKey, String referrer, String referrerKey) {
+    private String createMone(String email, String url, String pageKey, String referrer, String referrerKey) {
         String deviceId = getDeviceID(context);
         LinkedList<String> list = new LinkedList<>();
 
@@ -156,22 +174,22 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         list.add("");
         list.add(deviceId);
         list.add("");
-        list.add(userId);
+        list.add(email);
+        list.add("");
+        list.add(email);
         list.add("");
         list.add("");
         list.add("");
         list.add("");
         list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
-        list.add("");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
+        list.add("{}");
         return TextUtils.join(";;;", list);
     }
 
@@ -179,8 +197,9 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setEmail(String email) {
+        preferenceHelper.storeEmail(email);
+        this.email = email;
     }
 
     private Callback<MoneResponse> callback = new Callback<MoneResponse>() {
@@ -210,6 +229,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
             return new Converter<ResponseBody, MoneResponse>() {
                 @Override
                 public MoneResponse convert(ResponseBody responseBody) throws IOException {
+                    responseBody.close();
                     return null;
                 }
             };

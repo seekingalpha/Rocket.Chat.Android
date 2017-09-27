@@ -47,9 +47,7 @@ public class MainActivity extends AbstractAuthedActivity implements MainContract
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    String host = getString(R.string.sa_http_host);
-    PreferenceHelper preferenceHelper = new PreferenceHelper(this);
-    trackingHelper = new TrackingHelper(this, host, preferenceHelper);
+    trackingHelper = TrackingHelper.getInstance();
 
     setContentView(R.layout.activity_main);
     toolbar = (RoomToolbar) findViewById(R.id.activity_main_toolbar);

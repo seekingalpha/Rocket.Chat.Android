@@ -179,7 +179,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
         absoluteUrlHelper,
         methodCallHelper,
         ConnectivityManager.getInstance(getContext()),
-        new TrackingHelper(getActivity(), getString(R.string.sa_http_host), new PreferenceHelper(getActivity()))
+        TrackingHelper.getInstance()
     );
 
     if (savedInstanceState == null) {
