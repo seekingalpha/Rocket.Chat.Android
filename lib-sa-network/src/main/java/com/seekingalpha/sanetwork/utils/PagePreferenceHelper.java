@@ -4,9 +4,9 @@ public interface PagePreferenceHelper {
 
     String getLoginKey();
 
-    String getGroupChatKey();
+    String getGroupChatKey(String key);
 
-    String getDirectMessageKey();
+    String getDirectMessageKey(String key);
 
     void storeEmail(String userId);
 

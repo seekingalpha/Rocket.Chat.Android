@@ -79,7 +79,7 @@ public class SALoginPresenter extends LoginPresenter {
                             }
                         } else {
                             trackingHelper.setEmail(email);
-                            trackingHelper.correctCredentialsEvent();
+                            trackingHelper.correctCredentialsEvent(email);
                         }
                         return null;
                     });

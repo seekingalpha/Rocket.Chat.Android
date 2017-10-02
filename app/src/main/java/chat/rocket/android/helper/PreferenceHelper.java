@@ -36,13 +36,13 @@ public class PreferenceHelper implements PagePreferenceHelper {
     }
 
     @Override
-    public String getGroupChatKey() {
-        return getPageKey(GROUP_CHAT_KEY);
+    public String getGroupChatKey(String key) {
+        return getPageKey(GROUP_CHAT_KEY + key);
     }
 
     @Override
-    public String getDirectMessageKey() {
-        return getPageKey(DIRECT_MESSAGE_KEY);
+    public String getDirectMessageKey(String key) {
+        return getPageKey(DIRECT_MESSAGE_KEY + key);
     }
 
     @Override

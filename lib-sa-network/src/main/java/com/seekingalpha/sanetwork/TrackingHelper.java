@@ -111,14 +111,13 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     }
 
     public void wrongCredentialsEvent(String email) {
-        EmailData emailData = new EmailData(email);
-        Gson gson = new Gson();
-        moneEvent(SOURCE_ROADBLOCK, ACTION_WRONG_CREDENTIALS, TYPE_CREDENTIALS, gson.toJson(emailData))
+
+        moneEvent(SOURCE_ROADBLOCK, ACTION_WRONG_CREDENTIALS, TYPE_CREDENTIALS, getEmailData(email))
                 .enqueue(callback);
     }
 
-    public void correctCredentialsEvent() {
-        moneEvent(SOURCE_ROADBLOCK, ACTION_SUCCESS, TYPE_CREDENTIALS)
+    public void correctCredentialsEvent(String email) {
+        moneEvent(SOURCE_ROADBLOCK, ACTION_SUCCESS, TYPE_CREDENTIALS, getEmailData(email))
                 .enqueue(callback);
         mainScreen();
     }
@@ -156,11 +155,17 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
     }
 
     public void groupChatScreen(String chatName) {
-        mone("/chat/group/" + chatName, preferenceHelper.getGroupChatKey()).enqueue(callback);
+        mone("/chat/group/" + chatName, preferenceHelper.getGroupChatKey(chatName)).enqueue(callback);
     }
 
     public void directMessageScreen(String name) {
-        mone("/chat/direct_msg/" + name, preferenceHelper.getDirectMessageKey()).enqueue(callback);
+        mone("/chat/direct_msg/" + name, preferenceHelper.getDirectMessageKey(name)).enqueue(callback);
+    }
+
+    private String getEmailData(String email){
+        EmailData emailData = new EmailData(email);
+        Gson gson = new Gson();
+        return gson.toJson(emailData);
     }
 
     private String createMone(String email, String url, String pageKey, String referrer, String referrerKey) {
