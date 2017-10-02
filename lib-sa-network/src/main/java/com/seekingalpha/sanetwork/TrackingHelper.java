@@ -36,6 +36,8 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         trackingHelper = new TrackingHelper(context, host, preferenceHelper);
     }
 
+    private static final String MONE_TYPE = "rocketchat";
+
     private static final String TAG = "TrackingHelper";
     private static final String VERSION = "2";
 
@@ -166,7 +168,7 @@ public class TrackingHelper extends BaseApiHelper<TrackingApi> {
         LinkedList<String> list = new LinkedList<>();
 
         list.add(VERSION);
-        list.add("");
+        list.add(MONE_TYPE);
         list.add(pageKey);
         list.add(referrerKey);
         list.add(referrer);
