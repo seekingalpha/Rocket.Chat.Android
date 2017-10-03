@@ -29,6 +29,7 @@ public class RoomToolbar extends Toolbar {
 
   private Drawable privateChannelDrawable;
   private Drawable publicChannelDrawable;
+  private Drawable livechatChannelDrawable;
   private Drawable userStatusDrawable;
 
   private DrawerArrowDrawable drawerArrowDrawable;
@@ -63,7 +64,8 @@ public class RoomToolbar extends Toolbar {
 
     privateChannelDrawable = VectorDrawableCompat.create(getResources(), R.drawable.ic_lock_white_24dp, null);
     publicChannelDrawable = VectorDrawableCompat.create(getResources(), R.drawable.ic_hashtag_white_24dp, null);
-    userStatusDrawable = VectorDrawableCompat.create(getResources(), R.drawable.ic_user_status_black_24dp, null);
+    livechatChannelDrawable = VectorDrawableCompat.create(getResources(), R.drawable.ic_livechat_white_24dp, null);
+    userStatusDrawable = VectorDrawableCompat.create(getResources(), R.drawable.ic_user_status_black_24dp, null).mutate();
   }
 
   private void setNavigationIcon(Context context) {
@@ -90,6 +92,11 @@ public class RoomToolbar extends Toolbar {
     toolbarText.setText(title);
   }
 
+  public void hideChannelIcons() {
+    roomTypeImage.setVisibility(GONE);
+    userStatusImage.setVisibility(GONE);
+  }
+
   public void showPrivateChannelIcon() {
     roomTypeImage.setImageDrawable(privateChannelDrawable);
     userStatusImage.setVisibility(GONE);
@@ -98,6 +105,12 @@ public class RoomToolbar extends Toolbar {
 
   public void showPublicChannelIcon() {
     roomTypeImage.setImageDrawable(publicChannelDrawable);
+    userStatusImage.setVisibility(GONE);
+    roomTypeImage.setVisibility(VISIBLE);
+  }
+
+  public void showLivechatChannelIcon() {
+    roomTypeImage.setImageDrawable(livechatChannelDrawable);
     userStatusImage.setVisibility(GONE);
     roomTypeImage.setVisibility(VISIBLE);
   }
@@ -129,7 +142,7 @@ public class RoomToolbar extends Toolbar {
     userStatusImage.setVisibility(VISIBLE);
   }
 
-  public void setUnreadBudge(int numUnreadChannels, int numMentionsSum) {
+  public void setUnreadBadge(int numUnreadChannels, int numMentionsSum) {
     if (getNavigationIcon() == null) {
       return;
     }
