@@ -5,6 +5,7 @@ import java.io.IOException;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Response;
+import okhttp3.internal.http.HttpHeaders;
 import okhttp3.internal.http.RealResponseBody;
 import okio.GzipSource;
 import okio.Okio;
@@ -29,7 +30,10 @@ public class UnzippingInterceptor implements Interceptor {
                 .build();
         return response.newBuilder()
                 .headers(strippedHeaders)
-                .body(new RealResponseBody(strippedHeaders, Okio.buffer(responseBody)))
+                .body(new RealResponseBody(
+                        strippedHeaders.get("Content-Type"),
+                        HttpHeaders.contentLength(strippedHeaders),
+                        Okio.buffer(responseBody)))
                 .build();
     }
 }
