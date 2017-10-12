@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "1020987621558",
-    "firebase_url": "https://rocketchatnative.firebaseio.com",
-    "project_id": "rocketchatnative",
-    "storage_bucket": "rocketchatnative.appspot.com"
+    "project_number": "647302213082",
+    "firebase_url": "https://seeking-alpha-chat.firebaseio.com",
+    "project_id": "seeking-alpha-chat",
+    "storage_bucket": "seeking-alpha-chat.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1020987621558:android:16da2e50aff9f0c9",
+        "mobilesdk_app_id": "1:647302213082:android:61c43d26286cd21b",
         "android_client_info": {
-          "package_name": "chat.rocket.android"
+          "package_name": "com.seekingalpha.chat"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1020987621558-trk61fjrahho0ujtjap095p1jmi48pfq.apps.googleusercontent.com",
+          "client_id": "647302213082-k86g8gqnptoouau5692es7ok5f3g3nuo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDc7VYUdU6kRkoRTToiCn1rh-W0wJvhLWk"
+          "current_key": "AIzaSyAEqV2rhO3NaeNPTIMt0weLgL0jCZDSf80"
         }
       ],
       "services": {

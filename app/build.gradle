@@ -43,7 +43,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "chat.rocket.android"
+        applicationId "com.seekingalpha.chat"
         minSdkVersion 16
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 41
@@ -114,11 +114,9 @@ android {
         seekingalpha {
             versionCode 5
             versionName "1.0.2"
-            applicationId = "com.seekingalpha.chat"
         }
 
         rocket {
-            applicationId = "chat.rocket.android"
         }
     }
 }
