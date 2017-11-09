@@ -90,7 +90,7 @@ public class SARoomPresenter extends RoomPresenter {
             case Room.TYPE_DIRECT_MESSAGE:
                 trackingHelper.sendsDirectMessageEvent();
                 break;
-            case Room.TYPE_PRIVATE:
+            case Room.TYPE_GROUP:
                 trackingHelper.sendsDirectGroupEvent(parseUserId(msg));
                 break;
         }
@@ -131,7 +131,7 @@ public class SARoomPresenter extends RoomPresenter {
             case Room.TYPE_DIRECT_MESSAGE:
                 trackingHelper.directMessageScreen(room.getName());
                 break;
-            case Room.TYPE_PRIVATE:
+            case Room.TYPE_GROUP:
                 trackingHelper.groupChatScreen(room.getName());
                 break;
         }

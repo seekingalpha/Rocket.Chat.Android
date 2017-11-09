@@ -2,6 +2,9 @@ package chat.rocket.android.fragment.chatroom;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,10 +30,11 @@ import java.util.List;
 
 import chat.rocket.android.BackgroundLooper;
 import chat.rocket.android.R;
+import chat.rocket.android.RocketChatApplication;
+import chat.rocket.android.activity.MainActivity;
 import chat.rocket.android.activity.room.RoomActivity;
 import chat.rocket.android.api.MethodCallHelper;
 import chat.rocket.android.fragment.chatroom.dialog.FileUploadProgressDialogFragment;
-import chat.rocket.android.fragment.chatroom.dialog.MessageOptionsDialogFragment;
 import chat.rocket.android.fragment.sidebar.SidebarMainFragment;
 import chat.rocket.android.helper.AbsoluteUrlHelper;
 import chat.rocket.android.helper.FileUploadHelper;
@@ -43,12 +47,14 @@ import chat.rocket.android.helper.TextUtils;
 import chat.rocket.android.layouthelper.chatroom.AbstractNewMessageIndicatorManager;
 import chat.rocket.android.layouthelper.chatroom.MessageFormManager;
 import chat.rocket.android.layouthelper.chatroom.MessageListAdapter;
+import chat.rocket.android.layouthelper.chatroom.MessagePopup;
 import chat.rocket.android.layouthelper.chatroom.ModelListAdapter;
 import chat.rocket.android.layouthelper.chatroom.PairedMessage;
 import chat.rocket.android.layouthelper.extra_action.AbstractExtraActionItem;
 import chat.rocket.android.layouthelper.extra_action.MessageExtraActionBehavior;
 import chat.rocket.android.layouthelper.extra_action.upload.AbstractUploadActionItem;
 import chat.rocket.android.layouthelper.extra_action.upload.AudioUploadActionItem;
+import chat.rocket.android.layouthelper.extra_action.upload.FileUploadActionItem;
 import chat.rocket.android.layouthelper.extra_action.upload.ImageUploadActionItem;
 import chat.rocket.android.layouthelper.extra_action.upload.VideoUploadActionItem;
 import chat.rocket.android.log.RCLog;
@@ -56,6 +62,7 @@ import chat.rocket.android.renderer.RocketChatUserStatusProvider;
 import chat.rocket.android.service.ConnectivityManager;
 import chat.rocket.android.service.temp.DeafultTempSpotlightRoomCaller;
 import chat.rocket.android.service.temp.DefaultTempSpotlightUserCaller;
+import chat.rocket.android.widget.AbsoluteUrl;
 import chat.rocket.android.widget.RoomToolbar;
 import chat.rocket.android.widget.internal.ExtraActionPickerDialogFragment;
 import chat.rocket.android.widget.message.MessageFormLayout;
@@ -92,8 +99,8 @@ import permissions.dispatcher.RuntimePermissions;
 public class RoomFragment extends AbstractChatRoomFragment implements
         OnBackPressListener,
         ExtraActionPickerDialogFragment.Callback,
-        ModelListAdapter.OnItemClickListener<PairedMessage>,
         ModelListAdapter.OnItemLongClickListener<PairedMessage>,
+        ModelListAdapter.OnItemClickListener<PairedMessage>,
         RoomContract.View {
 
     private static final int DIALOG_ID = 1;
@@ -130,14 +137,14 @@ public class RoomFragment extends AbstractChatRoomFragment implements
 
     private RoomToolbar toolbar;
 
-    private SlidingPaneLayout pane;
+    private Optional<SlidingPaneLayout> optionalPane;
     private SidebarMainFragment sidebarFragment;
 
     public RoomFragment() {
     }
 
     /**
-     * create fragment with roomId.
+     * build fragment with roomId.
      */
     public static RoomFragment create(String hostname, String roomId) {
         Bundle args = new Bundle();
@@ -200,13 +207,13 @@ public class RoomFragment extends AbstractChatRoomFragment implements
 
     @Override
     protected void onSetupView() {
-        pane = getActivity().findViewById(R.id.sliding_pane);
+        optionalPane = Optional.ofNullable(getActivity().findViewById(R.id.sliding_pane));
         messageRecyclerView = rootView.findViewById(R.id.messageRecyclerView);
 
         messageListAdapter = new MessageListAdapter(getContext(), hostname);
         messageRecyclerView.setAdapter(messageListAdapter);
-        messageListAdapter.setOnItemClickListener(this);
         messageListAdapter.setOnItemLongClickListener(this);
+        messageListAdapter.setOnItemClickListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true);
         messageRecyclerView.setLayoutManager(linearLayoutManager);
@@ -254,10 +261,11 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     private void setupMessageActions() {
-        extraActionItems = new ArrayList<>(3); // fixed number as of now
+        extraActionItems = new ArrayList<>(4); // fixed number as of now
         extraActionItems.add(new ImageUploadActionItem());
         extraActionItems.add(new AudioUploadActionItem());
         extraActionItems.add(new VideoUploadActionItem());
+        extraActionItems.add(new FileUploadActionItem());
     }
 
     private void scrollToLatestMessage() {
@@ -291,22 +299,14 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void onItemClick(PairedMessage pairedMessage) {
+    public boolean onItemLongClick(PairedMessage pairedMessage) {
         presenter.onMessageSelected(pairedMessage.target);
+        return true;
     }
 
     @Override
-    public boolean onItemLongClick(PairedMessage pairedMessage) {
-        MessageOptionsDialogFragment messageOptionsDialogFragment = MessageOptionsDialogFragment
-                .create(pairedMessage.target);
-
-        messageOptionsDialogFragment.setOnMessageOptionSelectedListener(message -> {
-            messageOptionsDialogFragment.dismiss();
-            onEditMessage(message);
-        });
-
-        messageOptionsDialogFragment.show(getChildFragmentManager(), "MessageOptionsDialogFragment");
-        return true;
+    public void onItemClick(PairedMessage pairedMessage) {
+        presenter.onMessageTap(pairedMessage.target);
     }
 
     private void setupToolbar() {
@@ -314,11 +314,11 @@ public class RoomFragment extends AbstractChatRoomFragment implements
         toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.menu_room);
 
-        toolbar.setNavigationOnClickListener(view -> {
+        optionalPane.ifPresent(pane -> toolbar.setNavigationOnClickListener(view -> {
             if (pane.isSlideable() && !pane.isOpen()) {
                 pane.openPane();
             }
-        });
+        }));
 
         toolbar.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {
@@ -328,9 +328,9 @@ public class RoomFragment extends AbstractChatRoomFragment implements
                 case R.id.action_favorite_messages:
                     showRoomListFragment(R.id.action_favorite_messages);
                     break;
-//                case R.id.action_file_list:
-//                    showRoomListFragment(R.id.action_file_list);
-//                    break;
+                case R.id.action_file_list:
+                    showRoomListFragment(R.id.action_file_list);
+                    break;
                 case R.id.action_member_list:
                     showRoomListFragment(R.id.action_member_list);
                     break;
@@ -345,8 +345,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
         SlidingPaneLayout subPane = getActivity().findViewById(R.id.sub_sliding_pane);
         sidebarFragment = (SidebarMainFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.sidebar_fragment_container);
 
-        if (pane != null) {
-            pane.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
+        optionalPane.ifPresent(pane -> pane.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
                 @Override
                 public void onPanelSlide(View view, float v) {
                     messageFormManager.enableComposingText(false);
@@ -367,8 +366,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
                     subPane.closePane();
                     closeUserActionContainer();
                 }
-            });
-        }
+            }));
     }
 
     public void closeUserActionContainer() {
@@ -660,6 +658,32 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     @Override
     public void manualLoadImages() {
         messageListAdapter.setAutoloadImages(false);
+    }
+
+    @Override
+    public void onReply(AbsoluteUrl absoluteUrl, String markdown, Message message) {
+        messageFormManager.setReply(absoluteUrl, markdown, message);
+    }
+
+    @Override
+    public void onCopy(String message) {
+        RocketChatApplication context = RocketChatApplication.getInstance();
+        ClipboardManager clipboardManager =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("message", message));
+    }
+
+    @Override
+    public void showMessageActions(Message message) {
+        Activity context = getActivity();
+        if (context != null && context instanceof MainActivity) {
+            MessagePopup.take(message)
+                    .setReplyAction(msg -> presenter.replyMessage(message, false))
+                    .setEditAction(this::onEditMessage)
+                    .setCopyAction(msg -> onCopy(message.getMessage()))
+                    .setQuoteAction(msg -> presenter.replyMessage(message, true))
+                    .showWith(context);
+        }
     }
 
     private void onEditMessage(Message message) {
