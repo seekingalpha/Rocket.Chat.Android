@@ -23,6 +23,7 @@ import chat.rocket.android.service.ddp.base.ActiveUsersSubscriber;
 import chat.rocket.android.service.ddp.base.LoginServiceConfigurationSubscriber;
 import chat.rocket.android.service.ddp.base.UserDataSubscriber;
 import chat.rocket.android.service.observer.CurrentUserObserver;
+import chat.rocket.android.service.observer.DeletedMessageObserver;
 import chat.rocket.android.service.observer.FileUploadingToUrlObserver;
 import chat.rocket.android.service.observer.FileUploadingWithUfsObserver;
 import chat.rocket.android.service.observer.GcmPushRegistrationObserver;
@@ -57,6 +58,7 @@ public class RocketChatWebSocketThread extends HandlerThread {
       LoadMessageProcedureObserver.class,
       GetUsersOfRoomsProcedureObserver.class,
       NewMessageObserver.class,
+      DeletedMessageObserver.class,
       CurrentUserObserver.class,
       FileUploadingToUrlObserver.class,
       FileUploadingWithUfsObserver.class,
@@ -209,6 +211,8 @@ public class RocketChatWebSocketThread extends HandlerThread {
             if (task.isFaulted()) {
               Exception error = task.getError();
               RCLog.e(error);
+              connectivityManager.notifyConnectionLost(
+                      hostname, ConnectivityManagerInternal.REASON_NETWORK_ERROR);
               emitter.onError(error);
             } else {
               keepAliveTimer.update();
@@ -343,7 +347,7 @@ public class RocketChatWebSocketThread extends HandlerThread {
   }
 
   private Task<Void> fetchPublicSettings() {
-    return new MethodCallHelper(realmHelper, ddpClientRef).getPublicSettings();
+    return new MethodCallHelper(appContext, realmHelper, ddpClientRef).getPublicSettings(hostname);
   }
 
   private Task<Void> fetchPermissions() {
