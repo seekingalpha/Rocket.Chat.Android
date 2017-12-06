@@ -154,6 +154,7 @@ public class SidebarMainFragment extends AbstractFragment implements SidebarMain
     adapter.setOnItemClickListener(new RoomListAdapter.OnItemClickListener() {
       @Override
       public void onItemClick(RoomSidebar roomSidebar) {
+        searchView.setQuery(null, false);
         searchView.clearFocus();
         presenter.onRoomSelected(roomSidebar);
       }

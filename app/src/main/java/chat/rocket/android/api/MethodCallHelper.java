@@ -15,7 +15,7 @@ import chat.rocket.android.RocketChatCache;
 import chat.rocket.android.helper.CheckSum;
 import chat.rocket.android.helper.TextUtils;
 import chat.rocket.android.service.ConnectivityManager;
-import chat.rocket.android.service.DDPClientRef;
+import chat.rocket.android_ddp.DDPClient;
 import chat.rocket.android_ddp.DDPClientCallback;
 import chat.rocket.core.PublicSettingsConstants;
 import chat.rocket.core.SyncState;
@@ -48,7 +48,6 @@ public class MethodCallHelper {
       task -> Task.forResult(new JSONArray(task.getResult()));
   protected final Context context;
   protected final RealmHelper realmHelper;
-  protected final DDPClientRef ddpClientRef;
 
   /**
    * initialize with Context and hostname.
@@ -56,29 +55,32 @@ public class MethodCallHelper {
   public MethodCallHelper(Context context, String hostname) {
     this.context = context.getApplicationContext();
     this.realmHelper = RealmStore.getOrCreate(hostname);
-    ddpClientRef = null;
   }
 
   /**
    * initialize with RealmHelper and DDPClient.
    */
-  public MethodCallHelper(RealmHelper realmHelper, DDPClientRef ddpClientRef) {
+  public MethodCallHelper(RealmHelper realmHelper) {
     this.context = null;
     this.realmHelper = realmHelper;
-    this.ddpClientRef = ddpClientRef;
   }
 
-  public MethodCallHelper(Context context, RealmHelper realmHelper, DDPClientRef ddpClientRef) {
+  public MethodCallHelper(Context context, RealmHelper realmHelper) {
     this.context = context.getApplicationContext();
     this.realmHelper = realmHelper;
-    this.ddpClientRef = ddpClientRef;
   }
 
   @DebugLog
   private Task<String> executeMethodCall(String methodName, String param, long timeout) {
-    if (ddpClientRef != null) {
-      return ddpClientRef.get().rpc(UUID.randomUUID().toString(), methodName, param, timeout)
-          .onSuccessTask(task -> Task.forResult(task.getResult().result));
+    if (DDPClient.get() != null) {
+      return DDPClient.get().rpc(UUID.randomUUID().toString(), methodName, param, timeout)
+          .onSuccessTask(task -> Task.forResult(task.getResult().result))
+          .continueWithTask(task_ -> {
+            if (task_.isFaulted()) {
+               return Task.forError(task_.getError());
+            }
+            return Task.forResult(task_.getResult());
+          });
     } else {
       return MethodCall.execute(realmHelper, methodName, param, timeout)
           .onSuccessTask(task -> {
@@ -93,8 +95,13 @@ public class MethodCallHelper {
     return task.continueWithTask(_task -> {
       if (_task.isFaulted()) {
         Exception exception = _task.getError();
-        if (exception instanceof MethodCall.Error) {
-          String errMessageJson = exception.getMessage();
+        if (exception instanceof MethodCall.Error || exception instanceof DDPClientCallback.RPC.Error) {
+          String errMessageJson;
+          if (exception instanceof DDPClientCallback.RPC.Error) {
+            errMessageJson = ((DDPClientCallback.RPC.Error) exception).error.toString();
+          } else {
+            errMessageJson = exception.getMessage();
+          }
           if (TextUtils.isEmpty(errMessageJson)) {
             return Task.forError(exception);
           }
@@ -105,11 +112,10 @@ public class MethodCallHelper {
             return Task.forError(new TwoStepAuthException(errMessage));
           }
           return Task.forError(new Exception(errMessage));
-        } else if (exception instanceof DDPClientCallback.RPC.Error) {
-          String errMessage = ((DDPClientCallback.RPC.Error) exception).error.getString("message");
-          return Task.forError(new Exception(errMessage));
         } else if (exception instanceof DDPClientCallback.RPC.Timeout) {
           return Task.forError(new MethodCall.Timeout());
+        } else if (exception instanceof DDPClientCallback.Closed) {
+          return Task.forError(new Exception("Oops, your connection seems off..."));
         } else {
           return Task.forError(exception);
         }
@@ -188,8 +194,8 @@ public class MethodCallHelper {
           .put("algorithm", "sha-256"));
       return new JSONArray().put(param);
     }).onSuccessTask(CONVERT_TO_JSON_OBJECT)
-        .onSuccessTask(task -> Task.forResult(task.getResult().getString("token")))
-        .onSuccessTask(this::saveToken);
+      .onSuccessTask(task -> Task.forResult(task.getResult().getString("token")))
+      .onSuccessTask(this::saveToken);
   }
 
   public Task<Void> loginWithLdap(final String username, final String password) {

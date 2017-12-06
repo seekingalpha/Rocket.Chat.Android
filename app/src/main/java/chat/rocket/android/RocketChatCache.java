@@ -104,9 +104,12 @@ public class RocketChatCache {
     }
   }
 
-  public @NonNull String getSiteUrlFor(String hostname) {
+  public @Nullable String getSiteUrlFor(String hostname) {
     try {
       String selectedServerHostname = getSelectedServerHostname();
+      if (getLoginHostnamesJson() == null || getLoginHostnamesJson().isEmpty()) {
+        return null;
+      }
       return new JSONObject(getLoginHostnamesJson())
               .optString(hostname, selectedServerHostname);
     } catch (JSONException e) {
