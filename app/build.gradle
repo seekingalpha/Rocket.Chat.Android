@@ -1,7 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:5.+"
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'newrelic'
 
 repositories {
+    mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
     maven { url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo' }
 }
@@ -120,6 +132,7 @@ ext {
 }
 
 dependencies {
+    compile 'com.newrelic.agent.android:android-agent:5.+'
     compile project(':lib-sa-network')
     compile project(':android-ddp')
     compile project(':rocket-chat-android-widgets')

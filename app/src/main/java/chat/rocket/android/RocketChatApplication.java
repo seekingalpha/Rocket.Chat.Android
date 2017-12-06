@@ -5,6 +5,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
+import com.newrelic.agent.android.NewRelic;
 
 import java.util.List;
 
@@ -34,6 +35,11 @@ public class RocketChatApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        NewRelic.withApplicationToken(
+                "AA9226546d11d58070f0169a509a148353b617d9f8"
+        ).start(this);
+
         DDPClient.initialize(OkHttpHelper.INSTANCE.getClientForWebSocket());
         Fabric.with(this, new Crashlytics());
 
