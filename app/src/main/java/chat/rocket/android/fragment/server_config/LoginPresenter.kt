@@ -22,7 +22,7 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 
-class LoginPresenter(private val loginServiceConfigurationRepository: LoginServiceConfigurationRepository,
+open class LoginPresenter(private val loginServiceConfigurationRepository: LoginServiceConfigurationRepository,
                      private val publicSettingRepository: PublicSettingRepository,
                      private val methodCallHelper: MethodCallHelper) : BasePresenter<LoginContract.View>(), LoginContract.Presenter {
 

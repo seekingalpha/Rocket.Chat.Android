@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import chat.rocket.android.R
+import chat.rocket.android.SALaunchUtils
 import chat.rocket.android.api.MethodCallHelper
 import chat.rocket.android.layouthelper.oauth.OAuthProviderInfo
 import chat.rocket.android.log.RCLog
@@ -17,6 +18,8 @@ import chat.rocket.core.models.LoginServiceConfiguration
 import chat.rocket.persistence.realm.repositories.RealmLoginServiceConfigurationRepository
 import chat.rocket.persistence.realm.repositories.RealmPublicSettingRepository
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.seekingalpha.sanetwork.LoginHelper
+import com.seekingalpha.sanetwork.TrackingHelper
 import java.util.*
 
 
@@ -40,10 +43,12 @@ class LoginFragment : AbstractServerConfigFragment(), LoginContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        presenter = LoginPresenter(
+        presenter = SALoginPresenter(
                 RealmLoginServiceConfigurationRepository(hostname),
                 RealmPublicSettingRepository(hostname),
-                MethodCallHelper(context, hostname)
+                MethodCallHelper(context, hostname),
+                LoginHelper(activity!!.getString(R.string.sa_http_host)),
+                TrackingHelper.getInstance()
         )
     }
 
@@ -51,22 +56,14 @@ class LoginFragment : AbstractServerConfigFragment(), LoginContract.View {
         container = rootView.findViewById(R.id.container)
 
         val btnEmail = rootView.findViewById<Button>(R.id.btn_login_with_email)
-        val btnUserRegistration = rootView.findViewById<Button>(R.id.btn_user_registration)
         txtUsername = rootView.findViewById(R.id.editor_username)
         txtPasswd = rootView.findViewById(R.id.editor_passwd)
-        textInputUsername = rootView.findViewById(R.id.text_input_username)
-        textInputPassword = rootView.findViewById(R.id.text_input_passwd)
 
         setUpRxBinders()
 
         waitingView = rootView.findViewById(R.id.waiting)
 
         btnEmail.setOnClickListener { _ -> presenter.login(txtUsername.text.toString(), txtPasswd.text.toString()) }
-
-        btnUserRegistration.setOnClickListener { _ ->
-            UserRegistrationDialogFragment.create(hostname, txtUsername.text.toString(), txtPasswd.text.toString())
-                    .show(fragmentManager!!, "UserRegistrationDialogFragment")
-        }
     }
 
     fun setUpRxBinders() {
@@ -154,6 +151,8 @@ class LoginFragment : AbstractServerConfigFragment(), LoginContract.View {
     override fun onResume() {
         super.onResume()
         presenter.bindView(this)
+
+        TrackingHelper.getInstance().loginScreen()
     }
 
     override fun onPause() {
@@ -163,6 +162,10 @@ class LoginFragment : AbstractServerConfigFragment(), LoginContract.View {
     
     override fun goBack() {
         presenter.goBack(context)
+    }
+
+    override fun showErrorActivity() {
+        SALaunchUtils.showUserErrorActivity(activity)
     }
 
 }

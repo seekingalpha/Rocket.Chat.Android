@@ -52,7 +52,7 @@ public class SARoomPresenter extends RoomPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         pair -> trackRoom(pair.first),
-                        Logger::report
+                        Logger.INSTANCE::report
                 );
 
         addSubscription(subscription);
@@ -75,11 +75,11 @@ public class SARoomPresenter extends RoomPresenter {
                                                     view.onMessageSendSuccessfully();
                                                 }
                                             },
-                                            Logger::report
+                                            Logger.INSTANCE::report
                                     );
                             addSubscription(send);
                         },
-                        Logger::report
+                        Logger.INSTANCE::report
                 );
 
         addSubscription(subscription);

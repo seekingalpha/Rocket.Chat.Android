@@ -57,10 +57,13 @@ public class InputHostnameFragment extends AbstractFragment implements InputHost
     }
 
     private void hideSoftKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)
-                getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+      if (getActivity() == null) return;
+      InputMethodManager inputManager = (InputMethodManager)
+              getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+      View currentFocus = getActivity().getCurrentFocus();
+      if (inputManager == null || currentFocus == null) return;
+      inputManager.hideSoftInputFromWindow(currentFocus.getWindowToken(),
+              InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override
