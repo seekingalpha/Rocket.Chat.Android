@@ -133,7 +133,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     private MethodCallHelper methodCallHelper;
     private AbsoluteUrlHelper absoluteUrlHelper;
 
-    private Message edittingMessage = null;
+    private Message editingMessage = null;
 
     private RoomToolbar toolbar;
 
@@ -347,7 +347,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
 
         optionalPane.ifPresent(pane -> pane.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
                 @Override
-                public void onPanelSlide(View view, float v) {
+                public void onPanelSlide(@NonNull View view, float v) {
                     messageFormManager.enableComposingText(false);
                     sidebarFragment.clearSearchViewFocus();
                     //Ref: ActionBarDrawerToggle#setProgress
@@ -355,12 +355,12 @@ public class RoomFragment extends AbstractChatRoomFragment implements
                 }
 
                 @Override
-                public void onPanelOpened(View view) {
+                public void onPanelOpened(@NonNull View view) {
                     toolbar.setNavigationIconVerticalMirror(true);
                 }
 
                 @Override
-                public void onPanelClosed(View view) {
+                public void onPanelClosed(@NonNull View view) {
                     messageFormManager.enableComposingText(true);
                     toolbar.setNavigationIconVerticalMirror(false);
                     subPane.closePane();
@@ -490,8 +490,8 @@ public class RoomFragment extends AbstractChatRoomFragment implements
 
     @Override
     public boolean onBackPressed() {
-        if (edittingMessage != null) {
-            edittingMessage = null;
+        if (editingMessage != null) {
+            editingMessage = null;
             messageFormManager.clearComposingText();
         }
         return false;
@@ -543,22 +543,22 @@ public class RoomFragment extends AbstractChatRoomFragment implements
             inputContentInfo.releasePermission();
         } catch (Exception e) {
             RCLog.e(e);
-            Logger.report(e);
+            Logger.INSTANCE.report(e);
         }
 
         return true;
     }
 
     private void sendMessage(String messageText) {
-        if (edittingMessage == null) {
+        if (editingMessage == null) {
             presenter.sendMessage(messageText);
         } else {
-            presenter.updateMessage(edittingMessage, messageText);
+            presenter.updateMessage(editingMessage, messageText);
         }
     }
 
     @Override
-    public void setupWith(RocketChatAbsoluteUrl rocketChatAbsoluteUrl) {
+    public void setupWith(@NonNull RocketChatAbsoluteUrl rocketChatAbsoluteUrl) {
         if (rocketChatAbsoluteUrl != null) {
             token = rocketChatAbsoluteUrl.getToken();
             userId = rocketChatAbsoluteUrl.getUserId();
@@ -567,7 +567,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void render(Room room) {
+    public void render(@NonNull Room room) {
         roomType = room.getType();
         setToolbarTitle(room.getName());
 
@@ -592,7 +592,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void showUserStatus(User user) {
+    public void showUserStatus(@NonNull User user) {
         showToolbarUserStatuslIcon(user.getStatus());
     }
 
@@ -613,7 +613,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     public void onMessageSendSuccessfully() {
         scrollToLatestMessage();
         messageFormManager.onMessageSend();
-        edittingMessage = null;
+        editingMessage = null;
     }
 
     @Override
@@ -632,15 +632,16 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void showMessages(List<Message> messages) {
+    public void showMessages(@NonNull List<? extends Message> messages) {
         if (messageListAdapter == null) {
             return;
         }
-        messageListAdapter.updateData(messages);
+
+        messageListAdapter.updateData((List<Message>) messages);
     }
 
     @Override
-    public void showMessageSendFailure(Message message) {
+    public void showMessageSendFailure(@NonNull Message message) {
         new AlertDialog.Builder(getContext())
                 .setPositiveButton(R.string.resend,
                         (dialog, which) -> presenter.resendMessage(message))
@@ -651,7 +652,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void showMessageDeleteFailure(Message message) {
+    public void showMessageDeleteFailure(@NonNull Message message) {
         new AlertDialog.Builder(getContext())
                 .setTitle(getContext().getString(R.string.failed_to_delete))
                 .setMessage(getContext().getString(R.string.failed_to_delete_message))
@@ -670,12 +671,12 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void onReply(AbsoluteUrl absoluteUrl, String markdown, Message message) {
+    public void onReply(@NonNull AbsoluteUrl absoluteUrl, @NonNull String markdown, @NonNull Message message) {
         messageFormManager.setReply(absoluteUrl, markdown, message);
     }
 
     @Override
-    public void onCopy(String message) {
+    public void onCopy(@NonNull String message) {
         RocketChatApplication context = RocketChatApplication.getInstance();
         ClipboardManager clipboardManager =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -683,7 +684,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     @Override
-    public void showMessageActions(Message message) {
+    public void showMessageActions(@NonNull Message message) {
         Activity context = getActivity();
         if (context != null && context instanceof MainActivity) {
             MessagePopup.take(message)
@@ -697,7 +698,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
     }
 
     private void onEditMessage(Message message) {
-        edittingMessage = message;
+        editingMessage = message;
         messageFormManager.setEditMessage(message.getMessage());
     }
 
@@ -719,7 +720,7 @@ public class RoomFragment extends AbstractChatRoomFragment implements
         }
     }
 
-    public void loadMessages() {
-        presenter.loadMessages();
+    public void loadMissedMessages() {
+        presenter.loadMissedMessages();
     }
 }
